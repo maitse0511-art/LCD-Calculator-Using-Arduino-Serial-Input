@@ -1,0 +1,107 @@
+#include <LiquidCrystal.h>   // Library to control parallel LCD displays
+
+// LCD pin connections (RS, E, D4–D7)
+int RS = 11;
+int E  = 9;
+int D4 = 8;
+int D5 = 7;
+int D6 = 6;
+int D7 = 5;
+
+// Delay time after displaying result (ms)
+int dt = 10000;
+
+// Variables for calculator inputs and result
+int ValueA;
+int ValueB;
+int answer;
+
+// Operator input (+, -, *, /)
+String op;
+
+// Create LCD object using the defined pins
+LiquidCrystal lcd(RS, E, D4, D5, D6, D7);
+
+void setup() {
+  // Initialize LCD (16 columns, 4 rows)
+  lcd.begin(16, 4);
+
+  // Start serial communication for user input
+  Serial.begin(9600);
+}
+
+void loop() {
+
+  // Display calculator title
+  lcd.setCursor(0, 0);
+  lcd.print("LCD Calculator 2026");
+
+  // Prompt user to enter first value
+  lcd.setCursor(0, 1);
+  lcd.print("Enter Value A=");
+  Serial.println("Enter Value A=");
+
+  // Wait until data is available on Serial Monitor
+  while (Serial.available() == 0) {
+    // blocking wait
+  }
+
+  // Read integer input from serial
+  ValueA = Serial.parseInt();
+  lcd.clear();
+
+  // Prompt user to enter second value
+  lcd.setCursor(0, 1);
+  lcd.print("Enter Value B=");
+  Serial.println("Enter Value B=");
+
+  // Wait for serial input
+  while (Serial.available() == 0) {
+    // blocking wait
+  }
+
+  // Read second integer
+  ValueB = Serial.parseInt();
+  lcd.clear();
+
+  // Prompt user to enter operator
+  lcd.setCursor(0, 1);
+  lcd.print("input (+,-,*,/)");
+
+  // Wait for operator input
+  while (Serial.available() == 0) {
+    // blocking wait
+  }
+
+  // Read operator as a string
+  op = Serial.readString();
+
+  // Perform calculation based on operator
+  if (op == "+") {
+    answer = ValueA + ValueB;
+  }
+  if (op == "-") {
+    answer = ValueA - ValueB;
+  }
+  if (op == "*") {
+    answer = ValueA * ValueB;
+  }
+  if (op == "/") {
+    answer = ValueA / ValueB;   // No divide-by-zero handling yet
+  }
+
+  // Display calculation result
+  lcd.clear();
+  lcd.setCursor(0, 1);
+  lcd.print(ValueA);
+  lcd.print(op);
+  lcd.print(ValueB);
+  lcd.print("=");
+  lcd.print(answer);
+
+  // Hold result on screen
+  delay(dt);
+
+  // Clear LCD for next calculation
+  lcd.clear();
+}
